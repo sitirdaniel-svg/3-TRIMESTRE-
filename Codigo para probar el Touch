@@ -1,0 +1,81 @@
+#include <TFT_eSPI.h>
+#include <SPI.h>
+#include <XPT2046_Touchscreen.h>
+
+#define XPT2046_IRQ 36
+#define XPT2046_MOSI 32
+#define XPT2046_MISO 39
+#define XPT2046_CLK 25
+#define XPT2046_CS 33
+
+SPIClass mySpi = SPIClass(VSPI);
+
+XPT2046_Touchscreen ts(XPT2046_CS, XPT2046_IRQ);
+
+TFT_eSPI tft = TFT_eSPI();
+
+String letras[] = {
+  "NO", "DTH11", "TAGO", "THINGHER",
+  "HOLA", "ESP32",
+  "NO CREO", "WOW",
+  "jjj", "OK"
+};
+
+void setup() {
+
+  Serial.begin(115200);
+
+  tft.init();
+  tft.setRotation(1);
+
+  tft.fillScreen(TFT_BLACK);
+
+  tft.setTextColor(TFT_YELLOW, TFT_BLACK);
+  tft.setTextSize(2);
+  tft.drawString("TOCA LA PANTALLA", 50, 20);
+
+  mySpi.begin(
+    XPT2046_CLK,
+    XPT2046_MISO,
+    XPT2046_MOSI,
+    XPT2046_CS
+  );
+
+  ts.begin(mySpi);
+  ts.setRotation(1);
+
+  randomSeed(analogRead(0));
+}
+
+void loop() {
+
+  if (ts.touched()) {
+
+    // ===== BORRAR PANTALLA =====
+    tft.fillScreen(TFT_BLACK);
+
+    // Volver a escribir el titulo
+    tft.setTextColor(TFT_YELLOW, TFT_BLACK);
+    tft.setTextSize(2);
+    tft.drawString("TOCA LA PANTALLA", 50, 20);
+
+    TS_Point p = ts.getPoint();
+
+    int x = map(p.x, 200, 3800, 0, 320);
+    int y = map(p.y, 200, 3800, 0, 240);
+
+    // Texto aleatorio
+    String texto = letras[random(0, 10)];
+
+    // Color aleatorio
+    uint16_t color = random(0xFFFF);
+
+    tft.setTextColor(color, TFT_BLACK);
+    tft.setTextSize(3);
+
+    // Mostrar palabra
+    tft.drawString(texto, x, y);
+
+    delay(300);
+  }
+}
