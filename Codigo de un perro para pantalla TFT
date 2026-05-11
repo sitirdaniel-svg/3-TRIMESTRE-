@@ -1,0 +1,51 @@
+// Arduino + TFT_eSPI
+// Dibuja un perro completo color café
+
+#include <TFT_eSPI.h>
+
+TFT_eSPI tft = TFT_eSPI();
+
+// Color café personalizado
+#define CAFE 0x8A22
+
+void setup() {
+  tft.init();
+  tft.setRotation(1);
+  tft.fillScreen(TFT_WHITE);
+
+  // ===== CUERPO =====
+  tft.fillEllipse(120, 90, 50, 30, CAFE);
+
+  // ===== CABEZA =====
+  tft.fillCircle(70, 70, 25, CAFE);
+
+  // ===== OREJAS =====
+  tft.fillTriangle(50, 45, 60, 20, 70, 50, TFT_DARKGREY);
+  tft.fillTriangle(70, 50, 80, 20, 90, 45, TFT_DARKGREY);
+
+  // ===== OJOS =====
+  tft.fillCircle(62, 68, 3, TFT_BLACK);
+  tft.fillCircle(78, 68, 3, TFT_BLACK);
+
+  // ===== NARIZ =====
+  tft.fillCircle(70, 80, 4, TFT_BLACK);
+
+  // ===== BOCA =====
+  tft.drawLine(70, 84, 65, 90, TFT_BLACK);
+  tft.drawLine(70, 84, 75, 90, TFT_BLACK);
+
+  // ===== PATAS =====
+  tft.fillRect(90, 115, 10, 30, CAFE);
+  tft.fillRect(110, 115, 10, 30, CAFE);
+  tft.fillRect(135, 115, 10, 30, CAFE);
+  tft.fillRect(155, 115, 10, 30, CAFE);
+
+  // ===== COLA =====
+  tft.drawLine(170, 75, 200, 50, CAFE);
+  tft.drawLine(171, 76, 201, 51, CAFE);
+  tft.drawLine(172, 77, 202, 52, CAFE);
+}
+
+void loop() {
+
+}
