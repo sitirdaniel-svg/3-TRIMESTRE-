@@ -1,0 +1,50 @@
+#include "BluetoothSerial.h"
+
+BluetoothSerial SerialBT;
+
+char dato;
+
+#define IN1 26
+#define IN2 27
+
+void setup() {
+
+  Serial.begin(9600);
+
+  SerialBT.begin("MOTOR_DC");
+
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+}
+
+void loop() {
+
+  if (SerialBT.available()) {
+
+    dato = SerialBT.read();
+
+    if (dato == '1') {
+
+      // DERECHA
+      digitalWrite(IN1, HIGH);
+      digitalWrite(IN2, LOW);
+    }
+
+    else if (dato == '2') {
+
+      // IZQUIERDA
+      digitalWrite(IN1, LOW);
+      digitalWrite(IN2, HIGH);
+    }
+
+    else if (dato == '0') {
+
+      // STOP
+      digitalWrite(IN1, LOW);
+      digitalWrite(IN2, LOW);
+    }
+  }
+}
