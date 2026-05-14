@@ -1,0 +1,83 @@
+#include "BluetoothSerial.h"
+#include "DHT.h"
+
+// ===== BLUETOOTH =====
+BluetoothSerial SerialBT;
+
+// ===== DHT22 =====
+#define DHTPIN 4
+#define DHTTYPE DHT22
+
+DHT dht(DHTPIN, DHTTYPE);
+
+// ===== RELÉ =====
+#define RELE 2
+
+// Variables
+float temperatura;
+float humedad;
+
+void setup() {
+
+  Serial.begin(9600);
+
+  // Bluetooth
+  SerialBT.begin("ESP32_DHT22");
+
+  // Iniciar DHT22
+  dht.begin();
+
+  // Relé
+  pinMode(RELE, OUTPUT);
+
+  digitalWrite(RELE, LOW);
+
+  Serial.println("Sistema iniciado");
+}
+
+void loop() {
+
+  // Leer sensor
+  humedad = dht.readHumidity();
+
+  temperatura = dht.readTemperature();
+
+  // Verificar lectura
+  if (isnan(humedad) || isnan(temperatura)) {
+
+    Serial.println("Error leyendo DHT22");
+    return;
+  }
+
+  // Mostrar en monitor serial
+  Serial.print("Temperatura: ");
+  Serial.print(temperatura);
+  Serial.println(" °C");
+
+  Serial.print("Humedad: ");
+  Serial.print(humedad);
+  Serial.println(" %");
+
+  // ===== ENVIAR A APP INVENTOR =====
+  // Formato:
+  // temperatura,humedad;
+
+  SerialBT.print(temperatura);
+  SerialBT.print(",");
+
+  SerialBT.print(humedad);
+  SerialBT.print(";");
+
+  // ===== CONTROL DEL RELÉ =====
+
+  if (temperatura >= 30) {
+
+    digitalWrite(RELE, HIGH);
+
+  } else {
+
+    digitalWrite(RELE, LOW);
+  }
+
+  delay(2000);
+}
